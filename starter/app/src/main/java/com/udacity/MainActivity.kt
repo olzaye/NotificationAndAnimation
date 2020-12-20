@@ -64,20 +64,18 @@ class MainActivity : AppCompatActivity() {
 
                 val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
                 val cursor = downloadManager.query(query)
-                var status = ""
+                var status = FileStatus.EMPTY
 
                 if (cursor.moveToFirst()) {
                     status =
                         when (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))) {
-                            DownloadManager.STATUS_SUCCESSFUL -> "Success"
-                            else -> "Fail"
+                            DownloadManager.STATUS_SUCCESSFUL -> FileStatus.SUCCESS
+                            else -> FileStatus.FAIL
                         }
-                    Log.e("receiver", "status $status")
                 }
                 context?.let {
                     notificationManager.sendNotification(
-                        getCheckedRadioButtonText(),
-                        status,
+                        NotificationItem(getCheckedRadioButtonText(), status),
                         it
                     )
                 }

@@ -2,30 +2,29 @@ package com.udacity
 
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import android.os.Parcelable
 import androidx.core.app.NotificationCompat
-import com.udacity.Constant.Companion.DOWNLOADED_FILE_NAME
-import com.udacity.Constant.Companion.DOWNLOADED_FILE_STATUS
+import com.udacity.Constant.Companion.NOTIFICATION_ITEM
+import kotlinx.android.parcel.Parcelize
 
 private const val NOTIFICATION_ID = 0
 
 fun NotificationManager.sendNotification(
-    downloadedFile: String,
-    status: String,
+    notificationItem: NotificationItem,
     applicationContext: Context
 ) {
 
     val actionIntent = Intent(applicationContext, DetailActivity::class.java)
-    actionIntent.putExtra(DOWNLOADED_FILE_NAME, downloadedFile)
-    actionIntent.putExtra(DOWNLOADED_FILE_STATUS, status)
-
-    val actionPendingIntent = PendingIntent.getActivity(
-        applicationContext,
-        NOTIFICATION_ID,
-        actionIntent,
-        PendingIntent.FLAG_UPDATE_CURRENT
-    )
+    actionIntent.flags = FLAG_ACTIVITY_NEW_TASK
+    actionIntent.putExtra(NOTIFICATION_ITEM, notificationItem)
+    val actionPendingIntent = TaskStackBuilder.create(applicationContext).run {
+        addNextIntentWithParentStack(actionIntent)
+        getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+    }
 
     val builder = NotificationCompat.Builder(
         applicationContext,
@@ -36,7 +35,7 @@ fun NotificationManager.sendNotification(
             applicationContext
                 .getString(R.string.notification_title)
         )
-        .setContentText(downloadedFile)
+        .setContentText(notificationItem.fileName)
         .addAction(
             R.drawable.ic_assistant_black_24dp,
             applicationContext.getString(R.string.notification_button),
@@ -45,4 +44,20 @@ fun NotificationManager.sendNotification(
 
 
     notify(NOTIFICATION_ID, builder.build())
+}
+
+@Parcelize
+data class NotificationItem(
+    val fileName: String = "",
+    val fileStatus: FileStatus = FileStatus.EMPTY
+) : Parcelable
+
+enum class FileStatus(private val value: String) {
+    SUCCESS("Success"),
+    FAIL("Fail"),
+    EMPTY("");
+
+    override fun toString(): String {
+        return value
+    }
 }

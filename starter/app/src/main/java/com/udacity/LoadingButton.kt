@@ -13,6 +13,8 @@ import android.view.animation.LinearInterpolator
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import kotlin.properties.Delegates
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
 
 class LoadingButton @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -51,8 +53,17 @@ class LoadingButton @JvmOverloads constructor(
 
     private val backgroundColor = ResourcesCompat.getColor(resources, R.color.colorPrimary, null)
 
-    private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { p, old, new ->
-
+    private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { _, _, new ->
+        when (new) {
+            ButtonState.Completed -> {
+                isClickable = true
+                isFocusable = true
+            }
+            else -> {
+                isClickable = false
+                isFocusable = false
+            }
+        }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -65,10 +76,12 @@ class LoadingButton @JvmOverloads constructor(
     }
 
     override fun performClick(): Boolean {
+        buttonState = ButtonState.Clicked
         valueAnimator.duration = 3000
         valueAnimator.interpolator = DecelerateInterpolator()
         valueAnimator.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(p0: Animator?) {
+                buttonState = ButtonState.Completed
                 currentSweepAngle = 0
                 invalidate()
             }
@@ -90,6 +103,7 @@ class LoadingButton @JvmOverloads constructor(
 
         buttonValueAnimator.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(p0: Animator?) {
+                buttonState = ButtonState.Completed
                 widthButtonProgress = 0f
                 invalidate()
             }

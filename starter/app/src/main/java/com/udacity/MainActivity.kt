@@ -28,8 +28,6 @@ class MainActivity : AppCompatActivity() {
         ContextCompat.getSystemService(this, NotificationManager::class.java)
                 as NotificationManager
     }
-    private lateinit var pendingIntent: PendingIntent
-    private lateinit var action: NotificationCompat.Action
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,42 +129,3 @@ class MainActivity : AppCompatActivity() {
         private const val RETROFIT_ZIP_URL = "https://github.com/square/retrofit"
     }
 }
-
-
-//        Thread {
-//            var finishDownload = false
-//            var progress = 0
-//            while (!finishDownload) {
-//                val query = DownloadManager.Query().setFilterById(downloadID)
-//                val cursor = downloadManager.query(query)
-//
-//                if (cursor.moveToFirst()) {
-//                    val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
-//                    when (status) {
-//                        DownloadManager.STATUS_FAILED -> {
-//                            finishDownload = true
-//                            Toast.makeText(this, "STATUS_FAILED", Toast.LENGTH_LONG).show()
-//                        }
-//                        DownloadManager.STATUS_RUNNING -> {
-//                            val total =
-//                                cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES)
-//                            if (total >= 0) {
-//                                val downloaded =
-//                                    cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)
-//                                progress = (downloaded * 100L / total).toInt()
-////                                runOnUiThread {
-////                                    custom_button.animateCircle(progress)
-////                                }
-//                            }
-//                        }
-//                        DownloadManager.STATUS_SUCCESSFUL -> {
-//                            progress = 100
-//                            //Log.e("MainActivity", "progress $progress")
-//                            finishDownload = true
-//                            Log.e("MainActivity", "STATUS_SUCCESSFUL progress $progress")
-//                        }
-//                    }
-//                }
-//                cursor.close()
-//            }
-//        }.start()

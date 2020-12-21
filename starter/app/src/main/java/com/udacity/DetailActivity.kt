@@ -6,7 +6,6 @@ import androidx.databinding.DataBindingUtil
 import com.udacity.Constant.Companion.NOTIFICATION_ITEM
 import com.udacity.databinding.ActivityDetailBinding
 import kotlinx.android.synthetic.main.activity_detail.*
-import kotlinx.android.synthetic.main.content_detail.*
 
 class DetailActivity : AppCompatActivity() {
 
@@ -16,6 +15,10 @@ class DetailActivity : AppCompatActivity() {
             DataBindingUtil.setContentView<ActivityDetailBinding>(this, R.layout.activity_detail)
 
         setSupportActionBar(toolbar)
+        cancelNotification(this)
+
+        binding.contentDetailLayout.motionLayout.transitionToStart()
+
         intent?.getParcelableExtra<NotificationItem>(NOTIFICATION_ITEM)?.let {
             binding.contentDetailLayout.notificationItem = it
         }

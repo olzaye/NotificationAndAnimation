@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Parcelable
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.udacity.Constant.Companion.NOTIFICATION_ITEM
 import kotlinx.android.parcel.Parcelize
 
@@ -35,6 +36,7 @@ fun NotificationManager.sendNotification(
             applicationContext
                 .getString(R.string.notification_title)
         )
+        .setAutoCancel(true)
         .setContentText(notificationItem.fileName)
         .addAction(
             R.drawable.ic_assistant_black_24dp,
@@ -44,6 +46,15 @@ fun NotificationManager.sendNotification(
 
 
     notify(NOTIFICATION_ID, builder.build())
+}
+
+fun cancelNotification(context: Context) {
+    (ContextCompat.getSystemService(
+        context,
+        NotificationManager::class.java
+    ) as NotificationManager).apply {
+        cancelAll()
+    }
 }
 
 @Parcelize

@@ -11,6 +11,7 @@ import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.content.withStyledAttributes
 import kotlin.properties.Delegates
 
 class LoadingButton @JvmOverloads constructor(
@@ -48,7 +49,7 @@ class LoadingButton @JvmOverloads constructor(
 
     private val valueAnimator = ValueAnimator.ofInt(0, 360)
 
-    private val backgroundColor = ResourcesCompat.getColor(resources, R.color.colorPrimary, null)
+    private var buttonBackgroundColor = ResourcesCompat.getColor(resources, R.color.colorPrimary, null)
 
     private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { _, _, new ->
         when (new) {
@@ -63,13 +64,23 @@ class LoadingButton @JvmOverloads constructor(
         }
     }
 
+    init {
+        context.withStyledAttributes(
+            attrs,
+            R.styleable.LoadingButton
+        ) {
+            buttonBackgroundColor = getColor(R.styleable.LoadingButton_buttonBgColor, 0)
+            textPaint.color = getColor(R.styleable.LoadingButton_buttonTextColor,0)
+        }
+    }
+
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         if (::extraBitmap.isInitialized) extraBitmap.recycle()
 
         extraBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         extraCanvas = Canvas(extraBitmap)
-        extraCanvas.drawColor(backgroundColor)
+        extraCanvas.drawColor(buttonBackgroundColor)
     }
 
     override fun performClick(): Boolean {
